@@ -1,0 +1,145 @@
+\documentclass[11pt,letterpaper]{beamer}
+\usetheme{Berkeley}
+\usepackage[ascii]{inputenc}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{graphicx}
+\usepackage{booktabs}
+%\usepackage[left=1.00in, right=1.00in, top=1.00in, bottom=1.00in]{geometry}
+
+\author{Steven Turner}
+\title{Population Modeling}
+\date{2016}
+
+\begin{document}
+	\frame{\titlepage}
+\section{Introduction}
+	\begin{frame}
+		\frametitle{Introduction}
+		\begin{itemize}
+			\item exponential, logistic, Gompertz 
+			\item Populations: US and Munich, Germany
+			\item Analyzing Models
+			\begin{itemize}
+				\item The models ability to predict
+				\item How close the data fits the model
+			\end{itemize}
+		\end{itemize}
+	\end{frame}
+	
+\section{The Models}
+
+	\begin{frame}
+	\frametitle{PPGR and Differential Equations}
+	Per Unit Population Growth Rate (PPGR)$ =\frac{1}{p}\frac{dp}{dt} $\\
+	\begin{table}
+		\resizebox{\textwidth}{!}{
+		\begin{tabular}{|c|c|c|c|c|}
+			\hline Model & Differential Equation & PPGR & $ \lim\limits_{p\rightarrow 0}\text{PPGR} $ & $ \lim\limits_{p\rightarrow L}\text{PPGR} $ \\[1ex]
+			exponential & $ \frac{dp}{dt}=rp $ & $ r $ & $ r $ & $ r $\\[1ex]
+			logistic & $ \frac{dp}{dt}=rp\left(1-\frac{p}{L}\right) $ & $ r\left(1-\frac{p}{L}\right) $ & $ r $ & $ 0 $\\[1ex]
+			Gompertz & $ \frac{dp}{dt}=rp\log\left(\frac{L}{p}\right) $ & $ r\log\left(\frac{L}{p}\right) $ & $ \infty $ & $ 0 $\\[1ex] \hline
+		\end{tabular}}
+	\end{table}
+	\end{frame}
+
+
+\section{The Project}
+
+	\begin{frame}
+	\frametitle{The Project}
+	\begin{columns}
+		\begin{column}{.5\textwidth}
+			\begin{table}
+				\resizebox{\textwidth}{!}{
+				\begin{tabular}{|c|c|}
+					\hline \multicolumn{2}{|c|}{Solutions to differential equations}\\[1ex]
+					\hline Model & Solutions\\[1ex]
+					exponential & $ P(t)=Ae^{rt} $\\[1ex]
+					logistic & $ P(t)=\frac{L}{1+Ae^{-rt}} $\\[1ex]
+					Gompertz & $ P(t)Le^{-be^{-rt}} $\\[1ex] \hline
+				\end{tabular}}
+			\end{table}
+		\end{column}
+		\begin{column}{.5\textwidth}
+			The project steps
+			\begin{itemize}
+				\item Data for US and Munich, Germany
+				\item Used Python to estimate the parameters in the solutions
+				\item Found $ \text{R}^2 $: This is our measure of fit
+				\item Found \% error for the actual last data point and the estimated point using the Leave One Out Method
+			\end{itemize}
+		\end{column}
+	\end{columns}
+
+	\end{frame}
+	
+\section{Results}
+
+\subsection{US}
+
+	\begin{frame}
+		\frametitle{Testing the Model}
+		\begin{columns}
+			\begin{column}{.5\textwidth}
+				\begin{table}
+					\resizebox{\textwidth}{!}{
+					\begin{tabular}{|c|c|c|}
+						\hline \multicolumn{3}{|c|}{Leave One Out Method}\\[1ex]
+						\hline & $ \text{R}^2 $ error & \% error\\[1ex]
+						\hline exponential & 0.9837 & 10.58\% \\[1ex]
+						\hline logistic & 0.9971 &  -3.81\%\\[1ex]
+						\hline Gompertz & 0.9989 &  -1.28\% \\[1ex]
+						\hline
+					\end{tabular}}
+				\end{table}
+			\end{column}
+			\begin{column}{.5\textwidth}
+				\includegraphics[width=\textwidth]{USPop_Prediction}
+			\end{column}
+		\end{columns}
+	\end{frame}
+
+\subsection{Munich}
+	\begin{frame}
+		\frametitle{Testing the Model}
+		\begin{columns}
+			\begin{column}{.5\textwidth}
+				\begin{table}
+					\resizebox{\textwidth}{!}{
+					\begin{tabular}{|c|c|c|}
+						\hline \multicolumn{3}{|c|}{Leave One Out Method}\\[1ex]
+						\hline & $ \text{R}^2 $ error & \% error\\[1ex]
+						\hline exponential & 0.9383  & 7.56\% \\[1ex]
+						\hline logistic & 0.9909  & -2.83\% \\[1ex] 
+						\hline Gompertz & 0.9898  & -1.26\% \\[1ex] 
+						\hline
+					\end{tabular}}
+				\end{table}
+				
+			\end{column}
+			\begin{column}{.5\textwidth}
+				\includegraphics[width=\textwidth]{GPop_Prediction}
+			\end{column}
+		\end{columns}
+	\end{frame}
+	
+
+	
+\section{Conclusion}
+
+	\begin{frame}
+		\frametitle{Conclusion}
+		\begin{itemize}
+			\item Due to the Gompertz model, for both populations, having the lowest percent error and the largest $ \text{R}^2 $ error we decided it was the better model.\\
+			\item Realistically none are very good:\\
+			\begin{itemize}
+				\item Immigration and emigration\\
+				\item Always increasing
+			\end{itemize}
+		\end{itemize}
+		
+		% 
+	\end{frame}
+\end{document}

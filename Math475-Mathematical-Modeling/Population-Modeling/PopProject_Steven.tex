@@ -1,0 +1,278 @@
+\documentclass[english]{article}
+\usepackage{graphicx}
+%\usepackage{subfigure}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{babel}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{float}
+\usepackage{url}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{wrapfig}
+\usepackage{caption}
+\usepackage{subcaption}
+\newcommand{\LaTeXs}{\LaTeX{\/} }
+\newcommand{\matlabs}{{\sc Matlab{\/} }}
+\newcommand{\matlab}{{\sc Matlab}}
+\newcommand{\pop}{population }
+\begin{document}
+
+\title{Population Project}
+
+\author{
+	Steven Turner\thanks{Thanks to Sam (I think) for giving me the idea to separate my results section}
+	% \date{xx/xx/xx} %uncomment this to place a specific date or leave it blank to erase the date 
+}
+\maketitle
+\tableofcontents
+
+%\begin{abstract}
+%
+%\end{abstract}
+
+
+\section{Introduction}
+
+For our project, we will fit the populations of the United States (US) and Munich, Germany (Munich) to three different models for \pop to see which is best. The three models we will fit out data to are the exponential (\ref{exp}), logistic (\ref{log}), and Gompertz models (\ref{log}).
+
+\begin{align}
+\label{exp}P(t)&=Ae^{rt} & \text{exponential}\\
+\label{log}P(t)&=\frac{L}{1+Ae^{-rt}}&\text{logistic}\\
+\label{gom}P(t)&=Le^{-be^{-rt}}&\text{Gompertz}
+\end{align}
+
+Where $ L $ is the carrying capacity, $ P(t) $ is the population, and $ t $ is time. Carrying capacity is the amount of \pop that can be accommodated due to restrictions of resources. Resources such as food and water, but can also be things such as the area a \pop has to settle and climate of the region the \pop is settling.
+These equations are derived from the following differential equations
+
+\begin{align}
+\frac{dp}{dt}&=rp &\text{exponential}\\
+\frac{dp}{dt}&=r(1-\frac{p}{L})p &\text{logistic}\\
+\frac{dp}{dt}&=rp\log\left(\frac{L}{p}\right)&\text{Gompertz}
+\end{align}
+
+To compare the differences in our three models, we will not be looking at the solutions ($ P(t) $). Instead, we will be looking at the differential equations. Specifically we will be looking at the per unit population growth rate (PPGR); The PPGR is $ \frac{1}{p}\frac{dp}{dt} $. PPGR is the amount of growth contributed by one unit of population. For the comparison we will be looking at the $ \displaystyle\lim_{p\rightarrow0}\text{PPGR} $ and $ \displaystyle\lim_{p\rightarrow L}\text{PPGR} $ for all three models. What these limits will tell us is how fast the population ($ p $) is growing per person as the population gets tiny and as the population gets to the limit of their resources (carrying capacity $ L $).\\
+
+We will start by analyzing the exponential model (\ref{exp}). For the exponential model we have
+
+\begin{equation*}
+\text{PPGR}=\frac{1}{p}\frac{dp}{dt}=r.
+\end{equation*}
+
+Thus the two limits for the exponential model are
+
+\begin{align*}
+\lim_{p\rightarrow L}\text{PPGR}&=r\\
+\lim_{p\rightarrow 0}\text{PPGR}&=r.
+\end{align*}
+
+What these two limits mean is that no matter the size of the population, it will be growing at the same rate. The rate not changing is mostly a problem for the limit as $ p $ goes to $ L $. Since as the \pop gets close to it carrying capacity its PPGR is not slowing which could lead to overpopulation.\\ 
+
+For the logistic model, we have the following PPGR and limits
+
+\begin{align*}
+\text{PPGR}&=r(1-\frac{p}{L})\\
+\lim_{p\rightarrow L}\text{PPGR}&=0\\
+\lim_{p\rightarrow 0}\text{PPGR}&=r.
+\end{align*}
+
+Here our limit as the population goes to 0 is $ r $ just like the exponential model. However, as the population approaches its carrying capacity its PPGR slows to 0. This seems more realistic sense a \pop wouldn't want to overburden its resources.\\
+
+Lastly, we will look at the PPGR and the limits of the Gompertz model. The PPGR and limits are
+
+\begin{align*}
+\text{PPGR}&=r\log\left(\frac{L}{p}\right)\\
+\lim_{p\rightarrow L}\text{PPGR}&=0\\
+\lim_{p\rightarrow 0}\text{PPGR}&=\infty.
+\end{align*}
+
+Like the logistic model as our \pop approaches $ L $ our PPGR slows to 0. However, unlike the other two models as our \pop gets tiny, our growth rate is infinite. In the physical world, this makes no sense if you say a population grows infinitely fast, but you can think instead of your pop having almost limitless resources to develop with so it can expand at an alarming rate.\\
+
+Of the three models, I predict that the \pop of Munich and the US will be best modeled by the logistic model. I predict the logistic model will be the better model is because the logistic models PPGR does not have a limit of infinity. Despite being able to interpret what the infinite limit means, I don't think it is realistic for a \pop to be growing that fast.
+
+\section{Methods}
+We will be graphing the three models using matplotlib for Python. For our initial estimates for our parameters for the three models we used numpy's \verb|polyfit| to estimate linear parameters by linearizing our models, and to make them better we used the \verb|curve_fit| from the scipy library to get our final parameters. Linearizing means getting the three models into form $ y=mx+k $ so that \verb|polyfit| can make linear guess for our initial parameters.\\ 
+
+To linearize the exponential model we do the following 
+
+\begin{align*}
+\ln(P(t))&=\ln(Ae^{rt})\\
+&= \ln(A)+rt.
+\end{align*}
+
+Where $ \ln(P(t)) $ is our $ y $ and $ t $ (or time) is our $ x $. \verb|polyfit| estimates the parameters $ m=r $ and $ k=\ln(A) $.\\
+
+To linearize the logistic model we do the following
+
+\begin{align*}
+P&=\frac{L}{1+Ae^{-rt}}\\
+\frac{L}{P}&=1+Ae^{-rt}\\
+\frac{L}{P}-1&=Ae^{-rt}\\
+\ln\left(\frac{L}{P}-1\right)&=\ln(A)-rt.
+\end{align*}
+
+Here our $ y=\ln\left(\frac{L}{P}-1\right) $ and $ x=t $, and  \verb|polyfit| estimates our $ m=r $ and $ k=\ln(A) $.\\
+
+Last but not least is the linearization of the Gompertz model which is
+
+\begin{align*}
+P&=Le^{-be^{-rt}}\\
+\frac{L}{P}&=e^{be^{-rt}}\\
+\ln\left(\frac{L}{P}\right)&=be^{-rt}\\
+\ln\left(\ln\left(\frac{L}{P}\right)\right)&=\ln(b)-rt.
+\end{align*}
+
+Where $ y=\ln\left(\ln\left(\frac{L}{P}\right)\right) $, $ x=t $, and from \verb|polyfit| $ m=r $ and $ k=\ln(b) $.\\
+
+For the carrying capacity of Munich, I used 1.5 million. This was a guess based on the population in the data \cite{wiki} never going above 1.4 million. For the carrying capacity of the US, we used 350 Million appears to be tapering off below that. It should also be noted that once \verb|curve_fit| is used it will take the initial $ L $'s and adjust them.\\
+
+To evaluate the models, we are going to use the Leave One Out (LOO) method. We will be using the $ \text{R}^2 $ error (from LOO) and the error from the prediction of the last point to judge how good the models are. $ \text{R}^2 $ error is a measure of the goodness of fit of a model with numbers close to one being "good" and close to 0 being "bad."
+\section{Results: Munich}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline Fit & \multicolumn{3}{|c|}{Munich data; Population in Millions (from LOO)}\\
+		\hline
+		Exponential & $ A=0.1935 $ & $ r=0.0111 $ & \\
+		\hline
+		Logistic & $ L= 1.359 $ & $ A=21.96 $ & $ r=-0.0323 $\\
+		\hline
+		Gompertz & $ L=1.612 $ & $ b=4.100 $ & $ r=-0.0164 $\\
+		\hline
+		\multicolumn{4}{|c|}{$ L $ is in millions}\\
+		\hline
+	\end{tabular}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline  \multicolumn{5}{|c|}{Munich Population Data; Pop in Millions (from LOO)}  \\ 
+		\hline Fit & $ \text{R}^2 $ error & Population 2007 & Prediction 2007 & Percent Error \\ 
+		\hline Exponential & 0.9383 & 1.3055 & 1.4120 & 7.56\% \\ 
+		\hline Logistic & 0.9909 & 1.3055 & 1.2662 & -2.83\% \\ 
+		\hline Gompertz & 0.9898 & 1.3055 & 1.2881 & -1.26\% \\ 
+		\hline 
+	\end{tabular} 
+	\begin{figure}[h]
+		\begin{subfigure}{.48\textwidth}
+			\centering
+			\includegraphics[trim={0 0 0 .3in},width=\textwidth]{GPop_Models.png}
+			\caption{\label{Gpop_model} This is graph the three original models and the data that was used to generate them.}
+		\end{subfigure}%
+		~
+		\begin{subfigure}{.48\textwidth}
+			\centering
+			\includegraphics[trim={0 0 0 .3in},width=\textwidth]{GPop_Prediction}
+			\caption{\label{GPop_Prediction} This is graph the three models using the LOO method and the data minus the last point.}
+		\end{subfigure}
+		\caption{The Munich models and data}
+	\end{figure}
+\end{center}
+
+Our initial results for fitting the models to the Munich data is shown in figure \ref{Gpop_model}. What we can see is that the exponential overshoots our guess for carrying capacity which is a problem that was discussed earlier. Both the logistics model and Gompertz model appear to fit the data quite well, with both flattening out as we get closer to the carrying capacity as shown with the PPGR and figure \ref{Gpop_model}. By observation, it is interesting that the logistic model fits the data quite well up until WW2.\\
+
+
+Figure \ref{GPop_Prediction} is the graph of out LOO method. With the LOO method, we still see the exponential model still overshooting our data. As well as, the flatting of the other two models much like figure \ref{Gpop_model}. As shown in the table above we can see the $ \text{R}^2 $ error for the exponential model is much lower than the other two $\text{R}^2 $ errors. The reason for this is because the exponential has one fewer parameter to fit the data with it. By both the combination of $\text{R}^2 $ error and prediction error I would say that for the population of Munich that the Gompertz model is the better of the three models. 
+
+\section{Results: US}
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		Fit & \multicolumn{3}{|c|}{US data; Population in millions (from LOO)}\\
+		\hline
+		Exponential & $A =15.05 $ & $r=0.01418 $& \\
+		\hline
+		Logistic & $L =444.19 $ & $A =56.42 $ & $r =-0.0215 $\\
+		\hline
+		Gompertz & $L=1274.68 $& $b =5.718 $ & $r =-0.006297 $ \\    
+		\hline
+	\end{tabular}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hline
+		\multicolumn{5}{|c|}{United States data (from LOO)}\\
+		\hline
+		Fit & $R^2$ error & Population 2010 & Prediction 2010 & Percent error\\
+		\hline
+		Exponential & 0.9837 & 308.7 & 341.4 & 10.58\% \\
+		\hline
+		Logistic & 0.9971 & 308.7 & 296.9 & -3.81\%\\
+		\hline
+		Gompertz & 0.9989 & 308.7 & 304.7 & -1.28\% \\
+		\hline
+	\end{tabular}
+	\begin{figure}[h]
+		\begin{subfigure}{.48\textwidth}
+			\centering
+			\includegraphics[trim={0 0 0 .3in},width=\textwidth]{USpop_model}
+			\caption{\label{USpop_model} This is graph the three original models and the data that was used to generate them.}
+		\end{subfigure}%
+		~
+		\begin{subfigure}{.48\textwidth}
+			\centering
+			\includegraphics[trim={0 0 0 .3in},width=\textwidth]{USpop_prediction}
+			\caption{\label{USpop_prediction} This is graph the three models using the LOO method and the data minus the last point.}
+		\end{subfigure}
+		\caption{The US models and data}
+	\end{figure}
+\end{center}
+
+As we can see in figure \ref{USpop_model} much like figure \ref{Gpop_model} the exponential model overshoots our data for the US towards the end. Again much like figure \ref{Gpop_model} for the US models in figure \ref{USpop_model} we can see that the logistic and Gompertz models both follow the data very closely.\\
+
+Much like the data for Munich if we look at the LOO models and the original model for the US the graphs are very similar. Also like the Munich \pop model based on the $\text{R}^2 $ error and prediction error the Gompertz model is the best fit for the US population.
+
+
+
+\section{Conclusion}
+
+As we can clearly see from the combination of $ \text{R}^2 $ and closeness of prediction the Gompertz model is the best model for predicting both populations. The Gompertz being the better model is not what I predicted when starting to do the population modeling. Gompertz being the better model is interesting to me because it has the infinite limit which makes doesn't make a lot of physical sense. \\
+
+That being said I don't think any of these models would be good at predicting the \pop of a region over a longer period due to immigration and emigration. This is especially relevant during years with volatile political climates. Think the US now and the Middle East and the refugee crisis. Also as global warming causing sea levels to rise is another way that emigration could change the population. The region that comes to mind first is Florida. \\
+
+Another thing that makes these models inferior is the fact that they always increase. This makes it hard for them to account for a decrease in the population that happens for whatever reason.
+
+
+
+\bibliography{blah}
+\bibliographystyle{plainnat}
+
+%\section{notes}
+%\subsection{intro}
+%%For our project we will be analyzing the differences in three models for modeling population. We will be looking at the population of the United States and Munich, Germany to help determine which model ______. These models are the exponential (\ref{exp}), logistic (\ref{log}), and Gompertz (\ref{gom}). 
+%
+%%modeling the population of ___ and analyzing the difference
+%%For our project we will be modeling the populations of the United States and Munich, Germany. The models that we will be using to model the population are the logistic, the exponential, and the Gompertz models. 
+%
+%%Best fit parameters for the model and data
+%%best fit model
+%%Of these three I predict that the population of Munich and the US will be best modeled by the logistic model. I have two reasons, I know that the population of Munich will be volatile because of World War II, and as we saw in preliminary testing with the US pop in figure \ref{both_model}, the logistic model's growth slows faster that the other two models.
+%
+%%Using the differential equations, we can find the per unit of population growth rate (PPGR) for each model. The PPGR is defined as . This is the amount of growth that each unit of population contributes to the overall growth.\\
+%%
+%%First let us look at the PPGR for the exponential model which is $ r $. The reason the PPGR is unrealistic is that it doesn't grow as the population does. So a small pop grows at the same rate of a large population.\\
+%%
+%%The next PPGR is the logistic which is $ r(1-\frac{p}{L}) $. This PPGR is more realistic for two reasons it includes the idea of a carrying capacity (L) which is the largest the population can get. It also includes our population, which means as the population gets bigger it can reproduce more which seems reasonable.\\
+%%
+%%The last PPGR we will look at is the Gompertz PPGR. The $ r\log\left(\frac{L}{p}\right) $. Here again, the PPGR includes the \pop so it grows with the population.
+%%While the solutions to the differential equations (\ref{exp}, \ref{log}, \ref{gom}) all look pretty similar because of the variables; their differential equations tell us a different story. Before we go much further, we will define the per unit of population growth (PPGR). PPGR is the amount of growth that is contributed per individual unit of population. Mathematically the PPGR is defined as $ \frac{1}{p}\frac{dp}{dt} $.\\
+%
+%%First we will look at the PPGR for the exponential model, which is $ \frac{1}{p}\frac{dp}{dt}=r $. What this $ r $ is telling us is that no matter the size of the population, it is growing at a constant rate. So if you have ten people the population is growing just as fast as 100 people. This seems a little unrealistic.\\
+%%
+%%Second we will look at the PPGR for the logistic model. The PPGR is $ \frac{1}{p}\frac{dp}{dt}=r(1-\frac{p}{L}) $. For the logistic PPGR, we can see that it includes the population. So what this PPGR tells us is when the population is very small, our population grows very fast. When our population gets close to the carrying capacity the PPGR goes to 0. This is a much more realistic model than exponential because our population cannot be infinite, and because the size of the population determines how fast it grows.\\
+%%
+%%Lastly is the PPGR for the Gompertz model which is $ \frac{1}{p}\frac{dp}{dt}=r\log\left(\frac{L}{p}\right) $. Here again like the logistic PPGR we can see the Gompertz model includes a carrying capacity and the population. Unlike the Logistic model when $ p $ is very small our growth rate is infinite. Growth rate being infinite seems weird. However, it does kind of make sense. This is because when you small population it has access to almost limitless resources which would cause the pop to explode. When the population gets closer to the carrying capacity our PPGR again goes to 0. This model is about as realistic as the logistic model even though the weird infinite thing happens.\\
+%\subsection{methods}
+%%To get the equations, for the models, into a form that we could do math with them we had to linearize them. To linearize the exponential model (\ref{exp}) we take the the natural log of both sides to get
+%
+%%To linearize the logarithmic model (\ref{log}) we do the following
+%
+%%To linearize the Gompertz (\ref{gom}) we do the following
+%
+%%The whole point of linearizing is to use polyfit to the first degree to get our initial estimates for out parameters.\\
+%\subsection{results}
+%\subsection{conc}
+%%Generalize the conclusions for other models I think I did this
+
+\end{document}
+
